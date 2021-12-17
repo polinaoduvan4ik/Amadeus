@@ -1,0 +1,33 @@
+.Trainers_main{
+    width: 100%;
+    height: 663px;
+    position: absolute;
+    background-color: #F4ECDC;
+}
+
+.Trainers{
+    display: flex;
+    justify-content: space-evenly;
+    /*padding: 120px 50px;*/
+    padding-top: 100px;
+}
+
+.Trainer{
+    width: 340px;
+    height: 450px;
+    background-color: rgba(34, 75, 40, 0.26);
+}
+
+.Trainer_name{
+    font-size: 28px;
+    text-align: center;
+}
+
+.Trainer_description{
+    font-size: 20px;
+    text-align: center;
+    width: 300px;
+    height: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}

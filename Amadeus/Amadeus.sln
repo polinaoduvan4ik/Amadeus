@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30002.166
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amadeus", "Amadeus\Amadeus.csproj", "{C61805B6-3B32-4D0D-B15A-281BFBE7584A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C61805B6-3B32-4D0D-B15A-281BFBE7584A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C61805B6-3B32-4D0D-B15A-281BFBE7584A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C61805B6-3B32-4D0D-B15A-281BFBE7584A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C61805B6-3B32-4D0D-B15A-281BFBE7584A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {508DECAD-2B2F-4321-B660-4B2F0BEC75DD}
+	EndGlobalSection
+EndGlobal

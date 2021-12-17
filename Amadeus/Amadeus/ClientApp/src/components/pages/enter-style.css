@@ -1,0 +1,46 @@
+.Enter_main{
+    width: 100%;
+    height: 663px;
+    position: absolute;
+    background-color: #F4ECDC;
+    display: flex;
+    justify-content: space-evenly;
+    padding-top: 50px;
+
+}
+
+.Login_form{
+    width: 540px;
+}
+
+.Enter_form{
+    width: 540px;
+}
+
+.Info{
+    height: 80px;
+    font-size: 20px;
+}
+
+.Input_blok{
+    height: 50px;
+    width: 540px;
+    background-color: #ebd18e67;
+}
+
+.Input{
+    height: 50px;
+    width: 540px;
+    background-color: #ebd18e67;
+    border: none;
+    font-size: 18px;
+}
+
+
+
+.Button{
+    width: 180px;
+    margin-top: 30px;
+    margin-left: 175px;
+
+}

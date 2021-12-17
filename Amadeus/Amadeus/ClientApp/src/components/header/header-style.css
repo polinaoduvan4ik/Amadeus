@@ -1,0 +1,107 @@
+:before
+:after{
+    box-sizing: border-box;
+}
+
+.Container{
+    margin: 0 auto;
+    position: relative;
+}
+
+.Up_string{
+    width: 100%;
+    height: 90px;
+    vertical-align: middle;
+    background-color: #F4ECDC;
+}
+
+.Logo{
+    width: 300px;
+    display: inline;
+}
+
+.Logo_img{
+    margin-left: 10px;
+    margin-top: -10px;
+    width: 40px;
+    height: 40px;
+    display: inline;
+}
+
+.Logo_text{
+    font-size: 25px;
+    width: 200px;
+    display: inline;
+}
+
+.Nav{
+    font-size: 25px;
+    display: inline;
+    margin-left: 300px;
+
+}
+
+.Nav_link{
+    display: inline-block;
+    margin: 15px 30px;
+    color: black;
+    text-decoration: none;
+    position: relative;
+
+    transition: color .1s linear;
+}
+
+.Nav_link:after{
+    content: "";
+    display: block;
+    width: 100%;
+    height: 2px;
+    opacity: 0;
+
+    background-color: #552e1d;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1;
+
+    transition: opacity .1s linear;
+}
+
+.Nav_link:hover{
+    color: #552e1d;
+    text-decoration: none;
+}
+
+/*Difference after click*/
+.Nav_link:hover:after{
+    opacity: 1;
+}
+
+.Enter{
+    background-color:#DCAB8B;
+    width: 180px;
+    height: 40px;
+    margin-top: 15px;
+    margin-left: 20px;
+    border-radius: 50px;
+    display: inline;
+    position: absolute;
+
+}
+
+.Enter_text{
+    position: absolute;
+    margin-top: 5px;
+    margin-left: 15px;
+    color: black;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+
+
+.Enter_text:hover{
+    color: #552e1d;
+    text-decoration: none;
+}
+

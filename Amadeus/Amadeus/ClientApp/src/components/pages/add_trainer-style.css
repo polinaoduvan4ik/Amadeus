@@ -1,0 +1,59 @@
+.AddTrainer_Main{
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.4);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.AddTrainer_content{
+    padding: 30px;
+    border-radius: 12px;
+    background-color: #f7f2e8;
+    height: 700px;
+    width: 600px;
+    padding-top: 10px;
+
+}
+
+.AddTrainer_Info{
+    height: 370px;
+    width: 600px;
+    font-size: 20px;
+
+}
+
+.AddTrainer_Input_blok{
+    height: 50px;
+    width: 550px;
+    background-color: #ebd18e67;
+}
+
+.AddTrainer_Input{
+    height: 50px;
+    width: 550px;
+    background-color: #ebd18e67;
+    border: none;
+    font-size: 18px;
+}
+
+.AddTrainer_Add_button{
+    background-color: #F4ECDC;
+    border-radius: 50px;
+    width: 250px;
+    height: 50px;
+    margin-left: 140px;
+    margin-top: 200px;
+    font-size: 20px;
+
+}
+
+.Close_button{
+    text-align: right;
+}
+
+

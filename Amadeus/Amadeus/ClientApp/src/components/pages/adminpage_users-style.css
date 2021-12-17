@@ -1,0 +1,58 @@
+.AdminUsers_main{
+    width: 100%;
+    height: 663px;
+    position: absolute;
+    background-color: #F4ECDC;
+}
+
+.AddUsers_button{
+    background-color: #F4ECDC;
+    border-radius: 50px;
+    width: 250px;
+    height: 50px;
+    font-size: 20px;
+    margin-top: 10px;
+    margin-left: 470px;
+
+}
+
+.Users_list{
+    background-color: aqua;
+    margin-top: 10px;
+    height: 500px;
+}
+
+.EditUsers_button{
+    background-color: #F4ECDC;
+    border-radius: 50px;
+    width: 350px;
+    height: 50px;
+    font-size: 20px;
+    margin-top: 10px;
+    margin-left: 470px;
+    display: inline-block;
+    position: relative;
+
+
+
+}
+
+.DeleteUsers_button{
+    background-color: #F4ECDC;
+    border-radius: 50px;
+    width: 350px;
+    height: 50px;
+    font-size: 20px;
+    margin-top: 10px;
+    margin-left: 470px;
+    display: inline-block;
+    position: relative;
+
+
+
+}
+
+.Users_buttons{
+    display: table;
+
+}
