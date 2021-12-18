@@ -78,28 +78,15 @@ namespace Amadeus.Controllers
             try
             {
                 string tokenData = this.HttpContext.Request.Headers["Authorization"];
-
-                if(tokenData == null)
+                
+                if (tokenData == null)
                 {
                     return Unauthorized();
                 }
                 string token = tokenData.Split(" ")[1];
-                    
-                string secret = "mysupersecret_secretkey!123";
-                var key = Encoding.ASCII.GetBytes(secret);
-                var handler = new JwtSecurityTokenHandler();
-                var validations = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
-                var claims = handler.ValidateToken(token, validations, out var tokenSecure);
-                var login = claims.Identity.Name;
+                var login = AccountController.UncodeJwt(token);
 
                 var users = _context.Users;
-                var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
                 var id = users.Where(x => x.Login == login).Select(x => x.Id).FirstOrDefault();
                 var role = users.Where(x => x.Id == id).Select(x => x.IdRole).FirstOrDefault();
                 var name = users.Where(x => x.Id == id).Select(x => x.Name).FirstOrDefault();

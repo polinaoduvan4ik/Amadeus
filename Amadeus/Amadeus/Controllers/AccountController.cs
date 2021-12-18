@@ -124,7 +124,7 @@ namespace Amadeus.Controllers
             return encodedJwt;
         }
 
-     /*   public string UncodeJwt(string token)
+        static public string UncodeJwt(string token)
         {
             string secret = "mysupersecret_secretkey!123";
             var key = Encoding.ASCII.GetBytes(secret);
@@ -136,9 +136,9 @@ namespace Amadeus.Controllers
                 ValidateIssuer = false,
                 ValidateAudience = false
             };
-            var claims = handler.ValidateToken(token, validations, out var tokenSecure);
+            ClaimsPrincipal claims = handler.ValidateToken(token, validations, out var tokenSecure);
             return claims.Identity.Name;
-        }*/
+        }
 
         public static string generateSHA512(string input)
         {
