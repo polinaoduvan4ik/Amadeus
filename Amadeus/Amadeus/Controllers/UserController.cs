@@ -73,10 +73,18 @@ namespace Amadeus.Controllers
 
         [HttpGet]
         [Route("getUser")]
-        public async Task<IActionResult> GetUser(string token)
+        public async Task<IActionResult> GetUser()
         {
             try
             {
+                string tokenData = this.HttpContext.Request.Headers["Authorization"];
+
+                if(tokenData == null)
+                {
+                    return Unauthorized();
+                }
+                string token = tokenData.Split(" ")[1];
+                    
                 string secret = "mysupersecret_secretkey!123";
                 var key = Encoding.ASCII.GetBytes(secret);
                 var handler = new JwtSecurityTokenHandler();

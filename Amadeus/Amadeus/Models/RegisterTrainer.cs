@@ -15,10 +15,6 @@ namespace Amadeus.Models
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "Пароль введен неверно")]
-        public string ConfirmPassword { get; set; }
-
         [Required(ErrorMessage = "Не указано имя")]
         public string Name { get; set; }
 
@@ -31,5 +27,20 @@ namespace Amadeus.Models
         [Required(ErrorMessage = "Не указано описание")]
         public string TrainerDiscription { get; set; }
 
+
+        public RegisterTrainer()
+        {
+
+        }
+
+        public RegisterTrainer(string login, string password, string name, string surname, string phone, string description)
+        {
+            Login = login;
+            Password = password;
+            Name = name;
+            Surname = surname;
+            Phone = phone;
+            TrainerDiscription = description;
+        }
     }
 }

@@ -109,12 +109,39 @@ namespace Amadeus.Controllers
 
         }
 
-        /*[HttpDelete]
+        [HttpDelete]
         [Route("deleteUser")]
-        public async Task<IActionResult> DeleteUser(User model)
+        public async Task<IActionResult> DeleteUser(int id)
         {
+            try
+            {
+                var trainers = _context.Users;
+                var trainers_inf = _context.UsersInformations;
+                foreach(var a in trainers)
+                {
+                    if(a.Id == id)
+                    {
+                        trainers.Remove(a);
+                    }
+                }
+                foreach (var a in trainers_inf)
+                {
+                    if (a.IdUser == id)
+                    {
+                        trainers_inf.Remove(a);
+                    }
+                }
 
-        }*/
+                await _context.SaveChangesAsync();
+                return Json("Запись пользователя удалена");
+
+            }
+            catch(Exception ex)
+            {
+                return Json(BadRequest(new { errorMsg = ex.Message }));
+            }
+
+        }
 
         [HttpPost]
         [Route("addShedule")]
@@ -178,6 +205,57 @@ namespace Amadeus.Controllers
                 }
 
                 return Json(users1);
+
+            }
+            catch(Exception ex)
+            {
+                return Json(BadRequest(new { errorMsg = ex.Message }));
+
+            }
+        }
+
+
+        [HttpPut]
+        [Route("editUser")]
+        public async Task<IActionResult> EditUser(int id, string name, string surname, string phone)
+        {
+            try
+            {
+                if(id != 0)
+                {
+                    var users = _context.Users;
+                    if (users != null)
+                    {
+                        List<User> user1 = new List<User>();
+                        foreach (var a in users)
+                        {
+                            if (a.Id == id)
+                            {
+                                if(name != null)
+                                    a.Name = name;
+                                if(surname != null)
+                                    a.Surname = surname;
+                                if (phone != null)
+                                    a.Phone = phone;
+
+                                await _context.SaveChangesAsync();
+                            }
+                        }
+                        return Json("Описание тренера изменено");
+
+                    }
+                    else
+                    {
+                        return Json(NotFound(new { errorMsg = "Нет данных" }));
+                    }
+
+                }
+                else
+                {
+                    return Json(NotFound(new { errorMsg = "Пользователь не выбран" }));
+
+                }
+
 
             }
             catch(Exception ex)
