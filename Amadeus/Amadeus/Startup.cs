@@ -28,8 +28,7 @@ namespace Amadeus
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string connection = "Server=WIN-4PG4224I26S;Database=Amadeus;Trusted_Connection=True;";
-            services.AddDbContext<AmadeusContext>(options => options.UseSqlServer(connection));
+            services.AddDbContext<AmadeusContext>();
 
             services.AddHttpsRedirection(options =>
             {
@@ -76,6 +75,7 @@ namespace Amadeus
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
+
             app.UseRouting();
 
             app.UseCors(builder => builder.AllowAnyOrigin());
@@ -90,6 +90,7 @@ namespace Amadeus
                     pattern: "{controller}/{action=Index}/{id?}");
             });
 
+
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
@@ -99,6 +100,7 @@ namespace Amadeus
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
         }
     }
 }

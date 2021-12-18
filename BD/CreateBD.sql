@@ -1,6 +1,13 @@
 
 use Amadeus
 
+create table Roles
+(
+  Id int primary key identity(1,1),
+  Role_name nvarchar(20)
+)
+drop table Roles;
+
 create table Users
 (
   Id int primary key identity(1,1),
@@ -13,13 +20,6 @@ create table Users
   foreign key (Id_role) references Roles(Id)
 )
 drop table Users
-
-create table Roles
-(
-  Id int primary key identity(1,1),
-  Role_name nvarchar(20)
-)
-drop table Roles;
 
 create table Users_information
 (

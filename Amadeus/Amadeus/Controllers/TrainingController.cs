@@ -28,71 +28,87 @@ namespace Amadeus.Controllers
         {
             try
             {
-                List<Trainings> listtrainings = new List<Trainings>();
-                var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
-                var id = int.Parse(identity.Claims.Where(l => l.Type == "id").Select(l => l.Value).SingleOrDefault());
-                var role = identity.Claims.Where(r => r.Type == ClaimTypes.Role).Select(r => r.Value).SingleOrDefault();
-                var info = _context.UsersInformations.First(i => i.IdUser == id);
-                if (info != null)
+                string tokenData = this.HttpContext.Request.Headers["Authorization"];
+
+                if (tokenData == null)
                 {
-                    var trainytable = new Dictionary<int, Shedule>();
-                    if (role == "Admin")
-                    {
-                        trainytable = _context.Shedules.ToDictionary(x => x.Id, y => y);
-
-                    }
-                    else if(role == "Trainer")
-                    {
-                        trainytable = _context.Shedules.Where(x => x.IdTrainer.Value == id).ToDictionary(x => x.Id, y => y);
-
-                    }
-
-
-
-                    var elementsTrainings = _context.training.Include(x => x.IdUserNavigation).Where(x => trainytable.Keys.Contains(x.IdShedule.Value)).ToList();
-                    foreach (var a in trainytable)
-                    {
-                        var currentTrainees = elementsTrainings.Where(x => x.IdShedule.Value == a.Key).ToList();
-                        if (!currentTrainees.Any())
-                        {
-                            listtrainings.Add(new Trainings()
-                            {
-                                Data = a.Value.Data,
-                                HoursStart = a.Value.HoursStart,
-                                HoursEnd = a.Value.HoursEnd
-                            });
-
-                        }
-                        else
-                        {
-                            foreach (var currentTrainee in currentTrainees)
-                            {
-                                listtrainings.Add(new Trainings()
-                                {
-                                    Data = a.Value.Data,
-                                    HoursStart = a.Value.HoursStart,
-                                    HoursEnd = a.Value.HoursEnd,
-                                    Name = currentTrainee.IdUserNavigation.Name,
-                                    Surname = currentTrainee.IdUserNavigation.Surname,
-                                    Phone = currentTrainee.IdUserNavigation.Phone,
-                                    Status = currentTrainee.Status
-
-
-                                });
-                            }
-                        }
-
-                    }
+                    return Unauthorized();
                 }
-                    return Json(listtrainings);
-                
+                string token = tokenData.Split(" ")[1];
+                var login = AccountController.UncodeJwt(token);
 
+                int? id = _context.Users.Where(x => x.Login == login).Select(x => x.Id).FirstOrDefault();
+                int? role = _context.Users.Where(x => x.Id == id).Select(x => x.IdRole).FirstOrDefault();
+
+                if (role.HasValue)
+                {
+                    
+                    List<Shedule> schedules = new List<Shedule>();
+                    if (role.Value == 3) //Admin
+                    {
+                        schedules = _context.Shedules.ToList();
+                    }
+                    else if (role.Value == 2) //Trainer
+                    {
+                        schedules = _context.Shedules.Where(sch => sch.IdTrainer == id.Value).ToList();
+                    }
+                    else if (role.Value == 1) //User
+                    {
+                        List<training> trainings_elems = _context.training.Where(t => t.IdUser == id.Value).ToList();
+
+                        foreach (training training_el in trainings_elems)
+                        {
+                            schedules = _context.Shedules.Where(sch => sch.Id == training_el.IdShedule).ToList();
+                        }
+                    }
+
+
+                    List<FrontTraining> front_trainings = new List<FrontTraining>();
+                    foreach (Shedule shedule_note in schedules)
+                    {
+                        User trainer_info = _context.Users.Where(u => u.Id == shedule_note.IdTrainer).FirstOrDefault();
+
+                        FrontTraining front_training_data = new FrontTraining(shedule_note.Data,
+                                                                                shedule_note.HoursStart,
+                                                                                shedule_note.HoursEnd,
+                                                                                trainer_info.Surname + " " + trainer_info.Name,
+                                                                                trainer_info.Phone);
+
+                        List<training> temp_trainings = _context.training.Where(tr => tr.IdShedule == shedule_note.Id).ToList();
+
+                        foreach (training training in temp_trainings)
+                        {
+                            User participant_info = _context.Users.Where(u => u.Id == training.IdUser).FirstOrDefault();
+                            FrontTrainingParticipant participant = new FrontTrainingParticipant(participant_info.Surname + " " + participant_info.Name,
+                                                                                                participant_info.Phone,
+                                                                                                training.Status);
+                            front_training_data.Participants.Add(participant);
+                        }
+
+                        front_trainings.Add(front_training_data);
+                    }
+
+                    return Json(front_trainings);
+                }
+
+                return Json(BadRequest(new { errorMsg = "Некорректные данные" }));
             }
             catch(Exception ex)
             {
                 return Json(BadRequest(new { errorMsg = "Некорректные данные" }));
             }
         }
+
+        /*
+         * 
+        [HttpPost]
+        [Route("searchTrainings")]
+        public async Task<IActionResult> SearchTrainings()
+        {
+        
+        }
+
+        */
 
         [HttpDelete]
         [Route("deleteTraining")]
