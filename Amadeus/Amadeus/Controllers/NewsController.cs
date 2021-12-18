@@ -20,7 +20,7 @@ namespace Amadeus.Controllers
         [HttpGet]
         [Route("home")]
         //загрузка всех новостей
-        public async Task<IActionResult> LoadList()
+        public async Task<IActionResult> LoadList(int page, int limit)
         {
             var news = _context.News;
             if(news != null)
