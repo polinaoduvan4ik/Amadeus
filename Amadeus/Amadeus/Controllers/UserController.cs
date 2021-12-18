@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media.Imaging;
@@ -70,13 +73,27 @@ namespace Amadeus.Controllers
 
         [HttpGet]
         [Route("getUser")]
-        public async Task<IActionResult> GetUser()
+        public async Task<IActionResult> GetUser(string token)
         {
             try
             {
+                string secret = "mysupersecret_secretkey!123";
+                var key = Encoding.ASCII.GetBytes(secret);
+                var handler = new JwtSecurityTokenHandler();
+                var validations = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+                var claims = handler.ValidateToken(token, validations, out var tokenSecure);
+                var login = claims.Identity.Name;
+
+                var users = _context.Users;
                 var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
-                var id = int.Parse(identity.Claims.Where(l => l.Type == "id").Select(l => l.Value).SingleOrDefault());
-                var role = identity.Claims.Where(r => r.Type == ClaimTypes.Role).Select(r => r.Value).SingleOrDefault();
+                var id = users.Where(x => x.Login == login).Select(x => x.Id).FirstOrDefault();
+                var role = users.Where(x => x.Id == id).Select(x => x.IdRole).FirstOrDefault();
 
 
                 return Json(new { id = id, role = role });

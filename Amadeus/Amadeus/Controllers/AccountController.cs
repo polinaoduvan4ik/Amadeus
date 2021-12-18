@@ -10,6 +10,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Linq;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Amadeus.Controllers
 {
@@ -47,10 +50,10 @@ namespace Amadeus.Controllers
 
                     await Authenticate(user); // аутентификация
 
-                    return RedirectToAction("Index", "Home");
+                    return Json("Вы зарегестрировались");
                 }
                 else
-                    ModelState.AddModelError("", "Некорректные логин и(или) пароль");
+                    return new JsonResult(new BadResponse(Response.HttpContext, "Некорректные данные"));
             }
             return Json(model);
         }
@@ -67,18 +70,24 @@ namespace Amadeus.Controllers
                     .FirstOrDefaultAsync(u => u.Login == model.Login && u.Password == passwordhash);
                 if (user != null)
                 {
-                    await Authenticate(user); // аутентификация
-                    var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
-                    var id = int.Parse(identity.Claims.Where(l => l.Type == "id").Select(l => l.Value).SingleOrDefault());
-                    var role = identity.Claims.Where(r => r.Type == ClaimTypes.Role).Select(r => r.Value).SingleOrDefault();
+/*                    await Authenticate(user); // аутентификация
+*/                    var identity = await this.Authenticate(user);
+                    if (user == null)
+                    {
+                        return StatusCode(500, "Invalid username or password.");
+                    }
+
+                    var encodedJwt = GetJwtToken(user, identity);
+                    return Json(encodedJwt);
 
 
-                    return Json(new { id = id, role = role });
                 }
-                ModelState.AddModelError("", "Некорректные логин и(или) пароль");
+                return new JsonResult(new BadResponse(Response.HttpContext, "Такого пользователя не существует"));
             }
-            return Json(model);
+            return new JsonResult(new BadResponse(Response.HttpContext, "Некорректные логин и(или) пароль"));
         }
+        
+
         private async Task<ClaimsIdentity> Authenticate(User user)
         {
             // создаем один claim
@@ -89,12 +98,44 @@ namespace Amadeus.Controllers
                 new Claim(ClaimsIdentity.DefaultRoleClaimType, user.IdRole.ToString())
             };
             // создаем объект ClaimsIdentity
-            ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
                 ClaimsIdentity.DefaultRoleClaimType);
             // установка аутентификационных куки
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
-            return id;
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+            return claimsIdentity;
         }
+
+        private string GetJwtToken(User login, ClaimsIdentity identity)
+        {
+            var now = DateTime.UtcNow;
+            // создаем JWT-токен
+            var jwt = new JwtSecurityToken(
+                    issuer: Options.ISSUER,
+                    audience: Options.AUDIENCE,
+                    notBefore: now,
+                    claims: identity.Claims,
+                    expires: now.Add(TimeSpan.FromMinutes(Options.LIFETIME)),
+                    signingCredentials: new SigningCredentials(Options.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+            return encodedJwt;
+        }
+
+     /*   public string UncodeJwt(string token)
+        {
+            string secret = "mysupersecret_secretkey!123";
+            var key = Encoding.ASCII.GetBytes(secret);
+            var handler = new JwtSecurityTokenHandler();
+            var validations = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
+            var claims = handler.ValidateToken(token, validations, out var tokenSecure);
+            return claims.Identity.Name;
+        }*/
 
         public static string generateSHA512(string input)
         {
@@ -117,3 +158,4 @@ namespace Amadeus.Controllers
         }
     }
 }
+
