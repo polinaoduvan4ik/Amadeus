@@ -48,7 +48,8 @@ namespace Amadeus.Controllers
                     await _context.SaveChangesAsync();
 
 
-                    return RedirectToAction("Index", "Home");
+
+                    return Json("Тренер добавлен");
                 }
                 else
                     ModelState.AddModelError("", "Некорректные логин и(или) пароль");
@@ -78,23 +79,26 @@ namespace Amadeus.Controllers
 
         [HttpPut]
         [Route("editTrainer")]
-        public async Task<IActionResult> EditTrainer(int id, string text)
+        public async Task<IActionResult> EditTrainer([FromBody]EditTrainer model)
         {
             try
             {
-                var users = _context.Users;
-                if (users != null)
+                var users_inf = _context.UsersInformations;
+                if (users_inf != null)
                 {
-                    List<User> user1 = new List<User>();
-                    foreach (var a in users)
+                    List<UsersInformation> user1 = new List<UsersInformation>();
+                    foreach (var a in users_inf)
                     {
-                        if (a.Id == id)
+                        if (a.IdUser == model.Id)
                         {
-                            a.UsersInformation.TrainerDiscription = text;
-                            await _context.SaveChangesAsync();
+                            a.TrainerDiscription = model.TrainerDiscription;
+
                         }
                     }
+                    await _context.SaveChangesAsync();
+
                     return Json("Описание тренера изменено");
+
                 }
                 else
                 {

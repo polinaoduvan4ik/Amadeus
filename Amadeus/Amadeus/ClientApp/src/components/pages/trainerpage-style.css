@@ -1,0 +1,59 @@
+.Trainer_main{
+    width: 100%;
+    height: 663px;
+    position: absolute;
+    background-color: #F4ECDC;
+}
+
+
+.AddTraining_button{
+    background-color: #F4ECDC;
+    border-radius: 50px;
+    width: 250px;
+    height: 50px;
+    font-size: 20px;
+    margin-top: 10px;
+    margin-left: 630px;
+
+}
+
+.Training_list{
+    background-color: aqua;
+    margin-top: 10px;
+    height: 500px;
+}
+
+.EditTraining_button{
+    background-color: #F4ECDC;
+    border-radius: 50px;
+    width: 300px;
+    height: 50px;
+    font-size: 20px;
+    margin-top: 10px;
+    margin-left: 470px;
+    display: inline-block;
+    position: relative;
+
+
+
+}
+
+.DeleteTraining_button{
+    background-color: #F4ECDC;
+    border-radius: 50px;
+    width: 300px;
+    height: 50px;
+    font-size: 20px;
+    margin-top: 10px;
+    margin-left: 470px;
+    display: inline-block;
+    position: relative;
+
+
+
+}
+
+.Training_buttons{
+    display: table;
+
+}

@@ -227,16 +227,12 @@ namespace Amadeus.Controllers
         [Route("trainers")]
         public async Task<IActionResult> GetTrainers()
         {
-            var trainer = _context.Users.Where(t => t.IdRole == 2);
+            var trainer = _context.Users.Where(t => t.IdRole == 2).Select(t => new { t.Id, t.Name, t.Surname, t.Phone, t.UsersInformation.TrainerDiscription }).ToList();
             if (trainer != null)
             {
-                List<User> trainers = new List<User>();
-                foreach (var a in trainer)
-                {
-                    trainers.Add(a);
-                }
+               
 
-                return Json(trainers);
+                return Json(trainer);
             }
             else
             {

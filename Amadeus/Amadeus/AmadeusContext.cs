@@ -29,7 +29,7 @@ namespace Amadeus
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=DESKTOP-ILO1OPR\SQLEXPRESS;Initial Catalog=Amadeus;Integrated Security=True;");
+            optionsBuilder.UseSqlServer(@"Server=WIN-4PG4224I26S;Database=Amadeus;Trusted_Connection=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

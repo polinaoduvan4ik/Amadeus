@@ -16,6 +16,7 @@ import Admin from '../pages/adminpage'
 import AdminTrainers from '../pages/adminpage_trainers'
 import AdminUsers from '../pages/adminpage_users'
 import AdminCalls from '../pages/adminpage_calls'
+import TrainerPage from '../pages/trainerpage';
 
     
 
@@ -58,6 +59,9 @@ class App extends React.Component {
                         </Route>
                         <Route exact path='/admin_calls'>
                             <AdminCalls/>
+                        </Route>
+                        <Route exact path='/trainer_page'>
+                            <TrainerPage/>
                         </Route>
                     </Switch>
                 </Router>
