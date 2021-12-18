@@ -161,6 +161,32 @@ namespace Amadeus.Controllers
 
         }
 
+
+        [HttpGet]
+        [Route("listUsers")]
+        public async Task<IActionResult> ListUsers()
+        {
+            try
+            {
+                var users = _context.Users;
+                List<User> users1 = new List<User>();
+                foreach(var a in users1)
+                {
+                    if (a.IdRole == 1)
+                        users1.Add(a);
+                            
+                }
+
+                return Json(users1);
+
+            }
+            catch(Exception ex)
+            {
+                return Json(BadRequest(new { errorMsg = ex.Message }));
+
+            }
+        }
+
         
 
         

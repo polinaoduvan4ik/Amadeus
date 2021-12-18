@@ -50,10 +50,10 @@ namespace Amadeus.Controllers
 
                     await Authenticate(user); // аутентификация
 
-                    return Json("Вы зарегестрировались");
+                    return Json("Вы зарегистрировались");
                 }
                 else
-                    return new JsonResult(new BadResponse(Response.HttpContext, "Некорректные данные"));
+                    ModelState.AddModelError("", "Некорректные логин и(или) пароль");
             }
             return Json(model);
         }
@@ -78,13 +78,16 @@ namespace Amadeus.Controllers
                     }
 
                     var encodedJwt = GetJwtToken(user, identity);
+
+                    
+
                     return Json(encodedJwt);
 
 
                 }
-                return new JsonResult(new BadResponse(Response.HttpContext, "Такого пользователя не существует"));
+                return new JsonResult(new BadResponse("Такого пользователя не существует"));
             }
-            return new JsonResult(new BadResponse(Response.HttpContext, "Некорректные логин и(или) пароль"));
+            return new JsonResult(new BadResponse("Некорректные логин и(или) пароль"));
         }
         
 

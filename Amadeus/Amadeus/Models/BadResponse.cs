@@ -9,12 +9,11 @@ namespace Amadeus.Models
     public class BadResponse
     {
        
-            public string UserMessage;
+            public string error;
 
-            public BadResponse(HttpContext inHttpContext, string inMessage)
+            public BadResponse(string inMessage)
             {
-                inHttpContext.Response.StatusCode = 400;
-                UserMessage = inMessage;
+                error = inMessage;
                 
             }
         

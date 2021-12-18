@@ -94,9 +94,15 @@ namespace Amadeus.Controllers
                 var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
                 var id = users.Where(x => x.Login == login).Select(x => x.Id).FirstOrDefault();
                 var role = users.Where(x => x.Id == id).Select(x => x.IdRole).FirstOrDefault();
+                var name = users.Where(x => x.Id == id).Select(x => x.Name).FirstOrDefault();
+                var surname = users.Where(x => x.Id == id).Select(x => x.Surname).FirstOrDefault();
+                var phone = users.Where(x => x.Id == id).Select(x => x.Phone).FirstOrDefault();
 
 
-                return Json(new { id = id, role = role });
+
+
+
+                return Json(new { id = id, role = role, name = name, surname = surname, phone = phone });
 
             }
             catch (Exception ex)
