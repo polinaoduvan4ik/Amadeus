@@ -28,7 +28,7 @@ namespace Amadeus.Controllers
         {
             try
             {
-                List<Trainings> listtrainings = new List<Trainings>();
+                List<Trainings> gathered_trainings = new List<Trainings>();
                 var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
                 var id = int.Parse(identity.Claims.Where(l => l.Type == "id").Select(l => l.Value).SingleOrDefault());
                 var role = identity.Claims.Where(r => r.Type == ClaimTypes.Role).Select(r => r.Value).SingleOrDefault();
@@ -55,7 +55,7 @@ namespace Amadeus.Controllers
                         var currentTrainees = elementsTrainings.Where(x => x.IdShedule.Value == a.Key).ToList();
                         if (!currentTrainees.Any())
                         {
-                            listtrainings.Add(new Trainings()
+                            gathered_trainings.Add(new Trainings()
                             {
                                 Data = a.Value.Data,
                                 HoursStart = a.Value.HoursStart,
@@ -67,7 +67,7 @@ namespace Amadeus.Controllers
                         {
                             foreach (var currentTrainee in currentTrainees)
                             {
-                                listtrainings.Add(new Trainings()
+                                gathered_trainings.Add(new Trainings()
                                 {
                                     Data = a.Value.Data,
                                     HoursStart = a.Value.HoursStart,
@@ -84,7 +84,7 @@ namespace Amadeus.Controllers
 
                     }
                 }
-                    return Json(listtrainings);
+                    return Json(gathered_trainings);
                 
 
             }
