@@ -109,6 +109,7 @@ namespace Amadeus.Controllers
                 }
                 else
                     ModelState.AddModelError("", "Некорректные данные");
+                    return Json(new BadResponse("Некорректные данные"));
 
 
             }
