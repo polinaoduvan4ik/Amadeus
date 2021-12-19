@@ -68,7 +68,8 @@ namespace Amadeus.Controllers
                     {
                         User trainer_info = _context.Users.Where(u => u.Id == shedule_note.IdTrainer).FirstOrDefault();
 
-                        FrontTraining front_training_data = new FrontTraining(shedule_note.Data,
+                        FrontTraining front_training_data = new FrontTraining(shedule_note.Id,
+                                                                                shedule_note.Data,
                                                                                 shedule_note.HoursStart,
                                                                                 shedule_note.HoursEnd,
                                                                                 trainer_info.Surname + " " + trainer_info.Name,
@@ -79,9 +80,11 @@ namespace Amadeus.Controllers
                         foreach (training training in temp_trainings)
                         {
                             User participant_info = _context.Users.Where(u => u.Id == training.IdUser).FirstOrDefault();
-                            FrontTrainingParticipant participant = new FrontTrainingParticipant(participant_info.Surname + " " + participant_info.Name,
+                            FrontTrainingParticipant participant = new FrontTrainingParticipant(participant_info.Id,
+                                                                                                participant_info.Surname + " " + participant_info.Name,
                                                                                                 participant_info.Phone,
-                                                                                                training.Status);
+                                                                                                training.Status,
+                                                                                                training.NeedEquipment);
                             front_training_data.Participants.Add(participant);
                         }
 
@@ -99,45 +102,178 @@ namespace Amadeus.Controllers
             }
         }
 
-        /*
-         * 
         [HttpPost]
         [Route("searchTrainings")]
-        public async Task<IActionResult> SearchTrainings()
+        public IActionResult SearchTrainings([FromBody] TrainingSearchModel searchModel)
         {
-        
+            if (searchModel == null)
+            {
+                return Json(new BadResponse("Некорректные данные"));
+            }
+
+            List<Shedule> schedules = _context.Shedules.Where(s => s.Data.Value == searchModel.Data &&
+                                                                  s.IdTrainer == searchModel.TrainerId).ToList();
+
+            List<FrontTraining> front_trainings = new List<FrontTraining>();
+            foreach (Shedule sc in schedules)
+            {
+                if (DoesTrainingSuitForUser(sc, searchModel.SearcherId))
+                {
+                    User trainer_info = _context.Users.Where(u => u.Id == sc.IdTrainer).FirstOrDefault();
+
+                    FrontTraining front_training_data = new FrontTraining(sc.Id,
+                                                                            sc.Data,
+                                                                            sc.HoursStart,
+                                                                            sc.HoursEnd,
+                                                                            trainer_info.Surname + " " + trainer_info.Name,
+                                                                            trainer_info.Phone);
+
+                    List<training> temp_trainings = _context.training.Where(tr => tr.IdShedule == sc.Id).ToList();
+
+                    foreach (training training in temp_trainings)
+                    {
+                        User participant_info = _context.Users.Where(u => u.Id == training.IdUser).FirstOrDefault();
+                        FrontTrainingParticipant participant = new FrontTrainingParticipant(participant_info.Id,
+                                                                                            participant_info.Surname + " " + participant_info.Name,
+                                                                                            participant_info.Phone,
+                                                                                            training.Status,
+                                                                                            training.NeedEquipment);
+                        front_training_data.Participants.Add(participant);
+                    }
+
+                    front_trainings.Add(front_training_data);
+                }
+            }
+
+            if (front_trainings.Count == 0)
+            {
+                return Json(new BadResponse("Тренировки по заданными параметрами не найдены"));
+            }
+            else
+            {
+                return Json(front_trainings);
+            }
         }
 
-        */
-
         [HttpDelete]
-        [Route("deleteTraining")]
-        public async Task<IActionResult> DeleteTraining(training model)
+        [Route("deleteTrainingParticipant")]
+        public async Task<IActionResult> DeleteTrainingParticipant(int ScheduleId, int UserId) 
         {
-            try
+            if (ScheduleId == 0 || UserId == 0)
             {
-                if (ModelState.IsValid)
+                return Json(new BadResponse("Некорректные данные"));
+            }
+
+            foreach (var t in _context.training)
+            {
+                if (t.IdShedule == ScheduleId && t.IdUser == UserId)
                 {
-                    var trainings = _context.training;
-                    foreach(var a in trainings)
-                    {
-                        trainings.Remove(a);
-                    }
+                    _context.training.Remove(t);
                     await _context.SaveChangesAsync();
                     return Json("Запись на тренировку удалена");
                 }
-                else
-                {
-                    return Json(BadRequest(new { errorMsg = "Нет данных" }));
-                }
             }
-            catch(Exception ex)
-            {
-                return Json(BadRequest(new { errorMsg = ex.Message }));
-            }
+
+            return Json(new BadResponse("Отсутствует указанная запись"));
         }
 
-        
+        [HttpPost]
+        [Route("addTrainingParticipant")]
+        public async Task<IActionResult> AddTrainingParticipant(int ScheduleId, int UserId, bool NeedEquipment)
+        {
+            if (ScheduleId == 0 || UserId == 0)
+            {
+                return Json(new BadResponse("Некорректные данные"));
+            }
 
+            training training_participant = _context.training.Where(t => t.IdShedule == ScheduleId && t.IdUser == UserId).FirstOrDefault();
+            if (training_participant != null)
+            {
+                return Json(new BadResponse("Пользователь уже записан"));
+            }
+
+            Shedule schedule = _context.Shedules.Where(s => s.Id == ScheduleId).FirstOrDefault();
+            if (!DoesTrainingSuitForUser(schedule, UserId))
+            {
+                return Json(new BadResponse("Пользователь уже записан"));
+            }
+
+
+            _context.training.Add(new training(ScheduleId, UserId, "Записан", NeedEquipment));
+            await _context.SaveChangesAsync();
+
+            return Json("Запись на тренировку добавлена");
+        }
+
+        [HttpPost]
+        [Route("сhangeEquipmentNecessity")]
+        public async Task<IActionResult> ChangeEquipmentNecessity(int ScheduleId, int UserId, bool NewNeedEquipment)
+        {
+            if (ScheduleId == 0 || UserId == 0)
+            {
+                return Json(new BadResponse("Некорректные данные"));
+            }
+
+            training training_participant = _context.training.Where(t => t.IdShedule == ScheduleId && t.IdUser == UserId).FirstOrDefault();
+            if (training_participant == null)
+            {
+                return Json(new BadResponse("Пользователь не записан"));
+            }
+
+            foreach (training participant in _context.training)
+            {
+                if (participant.IdUser == UserId)
+                {
+                    participant.NeedEquipment = NewNeedEquipment;
+                    await _context.SaveChangesAsync();
+                    return Json("Необходимость оборудования изменена");
+                }
+            }
+            return Json(new BadResponse("Не удалось найти пользователя для изменения экипировки"));
+        }
+
+        bool DoesTrainingSuitForUser(Shedule shedule, int userId)
+        {
+
+            List<training> trainings_participants = _context.training.Where(t => t.IdShedule == shedule.Id).ToList();
+
+            if (trainings_participants.Count == 0)
+                return true;
+
+            UsersInformation users_information = _context.UsersInformations.Where(u => u.IdUser == userId).FirstOrDefault();
+            if (users_information == null)
+                return false;
+            string new_user_level_status = users_information.LevelStatus;
+
+            Template current_template = new Template();
+            foreach (training training_participant in trainings_participants)
+            {
+                UsersInformation user_information = _context.UsersInformations.Where(u => u.IdUser == userId).FirstOrDefault();
+                AddUserLvlToTemplate(current_template, user_information.LevelStatus);
+            }
+
+            AddUserLvlToTemplate(current_template, new_user_level_status);
+
+            Template result_template = _context.Templates.Where(t => t.Ozn >= current_template.Ozn &&
+                                                                     t.Z >= current_template.Z &&
+                                                                     t.FirstLevel >= current_template.FirstLevel &&
+                                                                     t.SecondLevel >= current_template.SecondLevel &&
+                                                                     t.Poni >= current_template.Poni).FirstOrDefault();
+
+            return result_template != null;
+        }
+
+        void AddUserLvlToTemplate(Template template, string userLvl)
+        {
+            switch (userLvl)
+            {
+                case "Ozn": template.Ozn++; break;
+                case "Z": template.Z++; break;
+                case "FirstLevel": template.FirstLevel++; break;
+                case "SecondLevel": template.SecondLevel++; break;
+                case "Poni": template.Poni++; break;
+                default: break;
+            }
+        }
     }
 }
