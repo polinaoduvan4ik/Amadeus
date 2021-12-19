@@ -22,14 +22,10 @@ namespace Amadeus.Controllers
         //загрузка всех новостей
         public async Task<IActionResult> LoadList(int page, int limit)
         {
-            var news = _context.News;
+            var news = _context.News.ToList();
             if(news != null)
             {
-                List<News> news_element = new List<News>();
-                foreach (var a in news)
-                {
-                    news_element.Add(a);
-                }
+                var news_element = news.Skip(1 * page).Take(limit);
 
                 return Json(news_element);
             }

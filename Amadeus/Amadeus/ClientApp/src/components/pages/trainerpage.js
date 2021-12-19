@@ -1,6 +1,7 @@
 import React from 'react'
 import '../pages/trainerpage-style.css';
 import Server_api from '../services/server_api';
+import AddTraining from './add_training';
 
 
 
@@ -23,6 +24,7 @@ class TrainerPage extends React.Component{
                     <button className='AddTraining_button' onClick={() => this.setState({show: true})}>
                         Добавить тренировку
                     </button>
+                    <AddTraining onClose={() => this.setState({show: false})} show={this.state.show}/>
                 </div>
                 <div className='Training_list'>
                     

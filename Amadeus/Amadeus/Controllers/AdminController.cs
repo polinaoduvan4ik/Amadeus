@@ -157,24 +157,24 @@ namespace Amadeus.Controllers
 
         [HttpPost]
         [Route("addShedule")]
-        public async Task<IActionResult> AddShedule(int id, DateTime date, DateTime beginwork, DateTime endwork)
+        public async Task<IActionResult> AddShedule([FromBody]AddSchedule model)
         {
             try
             {
-                if (id != 0 && date != null && beginwork != null && endwork != null)
+                if (model.IdTrainer != 0 && model.Data != null && model.HoursStart != null && model.HoursEnd != null)
                 {
 
-                    var beginworktime = beginwork.TimeOfDay;
-                    var endworktime = endwork.TimeOfDay;
+                    var beginworktime = model.HoursStart.Value;
+                    var endworktime = model.HoursEnd.Value;
                     TimeSpan diff = endworktime.Subtract(beginworktime);
                     var shedule = _context.Shedules;
 
                     for (int i = 0; i < diff.Hours; i++)
                     {
-                        var isshedule = _context.Shedules.Any(x => x.IdTrainer == id && x.Data == date && x.HoursStart == beginworktime.Add(new TimeSpan(i, 0, 0)) && x.HoursEnd == beginworktime.Add(new TimeSpan(i + 1, 0, 0)));
+                        var isshedule = _context.Shedules.Any(x => x.IdTrainer == model.IdTrainer && x.Data == model.Data && x.HoursStart == beginworktime.Add(new TimeSpan(i, 0, 0)) && x.HoursEnd == beginworktime.Add(new TimeSpan(i + 1, 0, 0)));
                         if (!isshedule)
                         {
-                            var shedule_element = new Shedule { IdTrainer = id, Data = date, HoursStart = beginworktime.Add(new TimeSpan(i, 0, 0)), HoursEnd = beginworktime.Add(new TimeSpan(i + 1, 0, 0)) };
+                            var shedule_element = new Shedule { IdTrainer = model.IdTrainer, Data = model.Data, HoursStart = beginworktime.Add(new TimeSpan(i, 0, 0)), HoursEnd = beginworktime.Add(new TimeSpan(i + 1, 0, 0)) };
                             shedule.Add(shedule_element);
                             await _context.SaveChangesAsync();
                         }
@@ -209,7 +209,7 @@ namespace Amadeus.Controllers
             {
                 var users = _context.Users;
                 List<User> users1 = new List<User>();
-                foreach(var a in users1)
+                foreach(var a in users)
                 {
                     if (a.IdRole == 1)
                         users1.Add(a);
@@ -250,9 +250,10 @@ namespace Amadeus.Controllers
                                 if (model.Phone != null)
                                     a.Phone = model.Phone;
 
-                                await _context.SaveChangesAsync();
                             }
                         }
+                        await _context.SaveChangesAsync();
+
                         return Json("Данные пользователя изменены");
 
                     }
