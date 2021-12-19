@@ -83,29 +83,36 @@ namespace Amadeus.Controllers
         {
             try
             {
-                var users_inf = _context.UsersInformations;
-                if (users_inf != null)
+                if(ModelState.IsValid)
                 {
-                    List<UsersInformation> user1 = new List<UsersInformation>();
-                    foreach (var a in users_inf)
+                    var users_inf = _context.UsersInformations;
+                    if (users_inf != null)
                     {
-                        if (a.IdUser == model.Id)
+                        List<UsersInformation> user1 = new List<UsersInformation>();
+                        foreach (var a in users_inf)
                         {
-                            a.TrainerDiscription = model.TrainerDiscription;
+                            if (a.IdUser == model.Id)
+                            {
+                                a.TrainerDiscription = model.TrainerDiscription;
 
+                            }
                         }
+                        await _context.SaveChangesAsync();
+
+                        return Json("Описание тренера изменено");
                     }
-                    await _context.SaveChangesAsync();
 
-                    return Json("Описание тренера изменено");
-
+                    else
+                    {
+                        return Json(NotFound(new { errorMsg = "Нет данных" }));
+                    }
                 }
                 else
-                {
-                    return Json(NotFound(new { errorMsg = "Нет данных" }));
-                }
+                    ModelState.AddModelError("", "Некорректные данные");
+
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Json(BadRequest(new { errorMsg = ex.Message }));
             }
@@ -221,11 +228,11 @@ namespace Amadeus.Controllers
 
         [HttpPut]
         [Route("editUser")]
-        public async Task<IActionResult> EditUser(int id, string name, string surname, string phone)
+        public async Task<IActionResult> EditUser([FromBody]EditUser model)
         {
             try
             {
-                if(id != 0)
+                if(model.Id != 0)
                 {
                     var users = _context.Users;
                     if (users != null)
@@ -233,19 +240,19 @@ namespace Amadeus.Controllers
                         List<User> user1 = new List<User>();
                         foreach (var a in users)
                         {
-                            if (a.Id == id)
+                            if (a.Id == model.Id)
                             {
-                                if(name != null)
-                                    a.Name = name;
-                                if(surname != null)
-                                    a.Surname = surname;
-                                if (phone != null)
-                                    a.Phone = phone;
+                                if(model.Name != null)
+                                    a.Name = model.Name;
+                                if(model.Surname != null)
+                                    a.Surname = model.Surname;
+                                if (model.Phone != null)
+                                    a.Phone = model.Phone;
 
                                 await _context.SaveChangesAsync();
                             }
                         }
-                        return Json("Описание тренера изменено");
+                        return Json("Данные пользователя изменены");
 
                     }
                     else
