@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Amadeus.Controllers
 {
-    [Authorize(Roles = "Trainer,Admin")]
+    //[Authorize(Roles = "Trainer,Admin")]
     public class TrainingController : Controller
     {
 
@@ -58,7 +58,11 @@ namespace Amadeus.Controllers
 
                         foreach (training training_el in trainings_elems)
                         {
-                            schedules = _context.Shedules.Where(sch => sch.Id == training_el.IdShedule).ToList();
+                            var sch = _context.Shedules.Where(sch => sch.Id == training_el.IdShedule).FirstOrDefault();
+                            if (sch != null)
+                            {
+                                schedules.Add(sch);
+                            }
                         }
                     }
 
@@ -169,67 +173,61 @@ namespace Amadeus.Controllers
                 if (t.IdShedule == ScheduleId && t.IdUser == UserId)
                 {
                     _context.training.Remove(t);
-                    await _context.SaveChangesAsync();
-                    return Json("Запись на тренировку удалена");
+                    
                 }
             }
-
-            return Json(new BadResponse("Отсутствует указанная запись"));
+            await _context.SaveChangesAsync();
+            return Json("Запись на тренировку удалена");
         }
 
         [HttpPost]
         [Route("addTrainingParticipant")]
-        public async Task<IActionResult> AddTrainingParticipant(int ScheduleId, int UserId, bool NeedEquipment)
+        public async Task<IActionResult> AddTrainingParticipant([FromBody]AddTraining model)
         {
-            if (ScheduleId == 0 || UserId == 0)
+            if (model.ScheduleId == 0 || model.UserId == 0)
             {
                 return Json(new BadResponse("Некорректные данные"));
             }
 
-            training training_participant = _context.training.Where(t => t.IdShedule == ScheduleId && t.IdUser == UserId).FirstOrDefault();
+            training training_participant = _context.training.Where(t => t.IdShedule == model.ScheduleId && t.IdUser == model.UserId).FirstOrDefault();
             if (training_participant != null)
             {
                 return Json(new BadResponse("Пользователь уже записан"));
             }
 
-            Shedule schedule = _context.Shedules.Where(s => s.Id == ScheduleId).FirstOrDefault();
-            if (!DoesTrainingSuitForUser(schedule, UserId))
+            Shedule schedule = _context.Shedules.Where(s => s.Id == model.ScheduleId).FirstOrDefault();
+            if (!DoesTrainingSuitForUser(schedule, model.UserId))
             {
                 return Json(new BadResponse("Пользователь уже записан"));
             }
 
 
-            _context.training.Add(new training(ScheduleId, UserId, "Записан", NeedEquipment));
+            _context.training.Add(new training(model.ScheduleId, model.UserId, "Записан", model.NeedEquipment));
             await _context.SaveChangesAsync();
 
             return Json("Запись на тренировку добавлена");
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("сhangeEquipmentNecessity")]
-        public async Task<IActionResult> ChangeEquipmentNecessity(int ScheduleId, int UserId, bool NewNeedEquipment)
+        public async Task<IActionResult> ChangeEquipmentNecessity([FromBody]ChangeEq model)
         {
-            if (ScheduleId == 0 || UserId == 0)
+            if (model.ScheduleId == 0 || model.UserId == 0)
             {
                 return Json(new BadResponse("Некорректные данные"));
             }
 
-            training training_participant = _context.training.Where(t => t.IdShedule == ScheduleId && t.IdUser == UserId).FirstOrDefault();
+            training training_participant = _context.training.Where(t => t.IdShedule == model.ScheduleId && t.IdUser == model.UserId).FirstOrDefault();
             if (training_participant == null)
             {
                 return Json(new BadResponse("Пользователь не записан"));
             }
 
-            foreach (training participant in _context.training)
-            {
-                if (participant.IdUser == UserId)
-                {
-                    participant.NeedEquipment = NewNeedEquipment;
-                    await _context.SaveChangesAsync();
-                    return Json("Необходимость оборудования изменена");
-                }
-            }
-            return Json(new BadResponse("Не удалось найти пользователя для изменения экипировки"));
+            training_participant.NeedEquipment = model.NewNeedEquipment;
+            await _context.SaveChangesAsync();
+
+       
+            return Json("Необходимость экипировки для клиента изменена");
         }
 
         bool DoesTrainingSuitForUser(Shedule shedule, int userId)
@@ -248,7 +246,7 @@ namespace Amadeus.Controllers
             Template current_template = new Template();
             foreach (training training_participant in trainings_participants)
             {
-                UsersInformation user_information = _context.UsersInformations.Where(u => u.IdUser == userId).FirstOrDefault();
+                UsersInformation user_information = _context.UsersInformations.Where(u => u.IdUser == training_participant.IdUser).FirstOrDefault();
                 AddUserLvlToTemplate(current_template, user_information.LevelStatus);
             }
 
@@ -269,11 +267,54 @@ namespace Amadeus.Controllers
             {
                 case "Ozn": template.Ozn++; break;
                 case "Z": template.Z++; break;
-                case "FirstLevel": template.FirstLevel++; break;
-                case "SecondLevel": template.SecondLevel++; break;
+                case "1": template.FirstLevel++; break;
+                case "2": template.SecondLevel++; break;
                 case "Poni": template.Poni++; break;
                 default: break;
             }
+        }
+
+        [HttpPut]
+        [Route("сhangeStatus")]
+        public async Task<IActionResult> сhangeStatus([FromBody]ChangeStatus model)
+        {
+            if (model.ScheduleId == 0 || model.UserId == 0 || model.NewStatus == null)
+            {
+                return Json(new BadResponse("Некорректные данные"));
+            }
+
+            training training_participant = _context.training.Where(t => t.IdShedule == model.ScheduleId && t.IdUser == model.UserId).FirstOrDefault();
+            if (training_participant == null)
+            {
+                return Json(new BadResponse("Пользователь не записан"));
+            }
+
+            training_participant.Status = model.NewStatus;
+            var users_inf = _context.UsersInformations.Where(u => u.IdUser == model.UserId).FirstOrDefault();
+            if(users_inf == null)
+            {
+                return Json(new BadResponse("Пользователь не записан"));
+            }
+            if (model.NewStatus == "Завершен")
+            {
+                users_inf.CanceledTraining = 0;
+                users_inf.AmountTraining++;
+                await _context.SaveChangesAsync();
+                //if (users_inf.AmountTraining % 10 == 0)
+                //    return Json("Следующая тренировка для пользователя будет бесплатная!");
+
+            }
+            if (model.NewStatus == "Отменен")
+            {
+                users_inf.CanceledTraining++;
+                await _context.SaveChangesAsync();
+                //if (users_inf.CanceledTraining >= 3)
+                //    return Json("Предупреждение пользователя о частой отмене тренировок");
+            }
+            await _context.SaveChangesAsync();
+            return Json("Статус записи изменен");
+
+
         }
     }
 }

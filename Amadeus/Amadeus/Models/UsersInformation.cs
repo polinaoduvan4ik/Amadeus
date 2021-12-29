@@ -10,10 +10,11 @@ namespace Amadeus
         public int IdUser { get; set; }
         public string LevelStatus { get; set; }
         public int? SubscriptionTraining { get; set; }
-        public byte[] WasOnTraining { get; set; }
+        public bool? WasOnTraining { get; set; }
         public int? CanceledTraining { get; set; }
         public int? AmountTraining { get; set; }
         public string TrainerDiscription { get; set; }
+        public bool? Equipment { get; set; }
 
         public virtual User IdUserNavigation { get; set; }
     }

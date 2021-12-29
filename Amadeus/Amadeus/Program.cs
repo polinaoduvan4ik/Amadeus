@@ -22,11 +22,7 @@ namespace Amadeus
                 try
                 {
                     var context = services.GetRequiredService<AmadeusContext>();
-
-                   
-
                     AmadeusContextSeed.SeedSampleData(context);
-
                 }
                 catch (Exception ex)
                 {
@@ -35,7 +31,6 @@ namespace Amadeus
 
             host.Run();
         }
-
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>

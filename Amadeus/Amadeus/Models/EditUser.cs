@@ -11,18 +11,20 @@ namespace Amadeus.Models
         public string Name { get; set; }
         public string Surname { get; set; }
         public string Phone { get; set; }
+        public string LevelStatus { get; set; }
 
         public EditUser()
         {
 
         }
 
-        public EditUser(int id, string name, string surname, string phone)
+        public EditUser(int id, string name, string surname, string phone, string levelstatus)
         {
             Id = id;
             Name = name;
             Surname = surname;
             Phone = phone;
+            LevelStatus = levelstatus;
         }
     }
 }

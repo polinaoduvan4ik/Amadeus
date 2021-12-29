@@ -11,9 +11,9 @@ namespace Amadeus.Models
         public string FullName;
         public string Phone;
         public string Status;
-        public bool NeedEquipment;
+        public bool? NeedEquipment;
 
-        public FrontTrainingParticipant(int userId, string fullName, string phone, string status, bool needEquipment)
+        public FrontTrainingParticipant(int userId, string fullName, string phone, string status, bool? needEquipment)
         {
             UserId = userId;
             FullName = fullName;

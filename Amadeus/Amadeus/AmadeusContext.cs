@@ -22,14 +22,17 @@ namespace Amadeus
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Shedule> Shedules { get; set; }
         public virtual DbSet<Template> Templates { get; set; }
-        public virtual DbSet<Traner> Traners { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UsersInformation> UsersInformations { get; set; }
         public virtual DbSet<training> training { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=WIN-4PG4224I26S;Database=Amadeus;Trusted_Connection=True;");
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Server=WIN-4PG4224I26S;Database=Amadeus;Trusted_Connection=True;");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -38,10 +41,6 @@ namespace Amadeus
 
             modelBuilder.Entity<Call>(entity =>
             {
-                entity.HasNoKey();
-
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
                 entity.Property(e => e.Name).HasMaxLength(30);
 
                 entity.Property(e => e.Phone).HasMaxLength(15);
@@ -106,15 +105,6 @@ namespace Amadeus
                     .HasColumnName("Template_name");
             });
 
-            modelBuilder.Entity<Traner>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Name).HasMaxLength(20);
-
-                entity.Property(e => e.Surname).HasMaxLength(20);
-            });
-
             modelBuilder.Entity<User>(entity =>
             {
                 entity.Property(e => e.IdRole).HasColumnName("Id_role");
@@ -160,10 +150,7 @@ namespace Amadeus
                     .HasColumnType("text")
                     .HasColumnName("Trainer_discription");
 
-                entity.Property(e => e.WasOnTraining)
-                    .HasMaxLength(1)
-                    .HasColumnName("Was_on_training")
-                    .IsFixedLength(true);
+                entity.Property(e => e.WasOnTraining).HasColumnName("Was_on_training");
 
                 entity.HasOne(d => d.IdUserNavigation)
                     .WithOne(p => p.UsersInformation)

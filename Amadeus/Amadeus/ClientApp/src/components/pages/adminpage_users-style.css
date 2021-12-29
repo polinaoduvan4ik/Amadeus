@@ -17,10 +17,26 @@
 }
 
 .Users_list{
-    background-color: aqua;
+    background-color: #D2B48C;
     margin-top: 10px;
+    max-width: 1000px;
     height: 500px;
+    overflow-y: auto;
+    margin: auto;
 }
+
+.Users_list .UserBlock{
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom:2px solid gray;
+}
+
+.Current{
+    background-color:grey;
+}
+
+
 
 .EditUsers_button{
     background-color: #F4ECDC;
@@ -29,7 +45,6 @@
     height: 50px;
     font-size: 20px;
     margin-top: 10px;
-    margin-left: 470px;
     display: inline-block;
     position: relative;
 
@@ -44,7 +59,6 @@
     height: 50px;
     font-size: 20px;
     margin-top: 10px;
-    margin-left: 470px;
     display: inline-block;
     position: relative;
 
@@ -53,6 +67,7 @@
 }
 
 .Users_buttons{
-    display: table;
+    display: flex;
+    justify-content: center;
 
 }

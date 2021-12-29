@@ -9,22 +9,63 @@ class AdminCalls extends React.Component{
     constructor(props){
         super(props)
         this.state={
-            idCalls: 0
+            calls:null,
+            currentCallId:0
         }
     }
 
-   /*  componentDidMount() {
-        this.server.get_trainers()
-        .then((data) => {
-            console.log(data);
-            this.setState({
-                trainers: data
-            })
+    getAllCalls(){
+        this.server_api.getCalls()
+        .then((data)=>{
+            if(data.error){alert(data.error)}
+            else{   
+                this.setState({
+                    calls:data
+                })
+            }
         })
-        .catch((err) => {
-            console.log(err);
+        .catch((error)=>{
+            console.log(`Error with fetch getCalls:`,error)
         })
-    } */
+    }
+
+    componentWillMount(){
+        this.getAllCalls()
+    }
+
+    _handleOnClick =(id)=>{
+        this.setState({
+            currentCallId:id
+        })
+    }
+
+    _handleDeleteCall = () =>{
+        this.server_api.deleteCall(this.state.currentCallId)
+        .then((data)=>{
+            if(data.error) alert(data.error)
+            this.getAllCalls();
+        })
+        .catch((error)=>{
+            console.log(`Error with fetch deleteCall:`,error)
+        })
+    }
+
+    rnderListOfCalls(){
+        let {calls,currentCallId} = this.state;
+        if(calls!=null){
+            return(
+                calls.map((call,index)=>{
+                    return(
+                        <div className={currentCallId===call.Id?('CallItem Current'):('CallItem')} onClick={this._handleOnClick.bind(this,call.Id)}>
+                            <div>{call.Name} {call.Surname}</div>
+                            <div>{call.Phone}</div>
+                        </div>
+                    )
+                })
+            )
+        }
+        return null;
+    }
 
     render(){
         return(
@@ -33,13 +74,13 @@ class AdminCalls extends React.Component{
                     <a className='Nav_link' href='/admin'>Вернуться</a>
 
                 <div className='Calls_list'>
-
+                    {this.rnderListOfCalls()}
                 </div>
                 </div>
                     
                 <div className='Calls_buttons'>
 
-                    <button className='DeleteCalls_button'>
+                    <button className='DeleteCalls_button' onClick={this._handleDeleteCall}>
                             Удалить запись
                     </button>
                 </div>

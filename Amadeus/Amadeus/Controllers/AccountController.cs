@@ -26,7 +26,6 @@ namespace Amadeus.Controllers
         }
        
         [HttpPost]
-       // [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register([FromBody]RegisterModel model)
         {
             if (ModelState.IsValid)
@@ -43,7 +42,7 @@ namespace Amadeus.Controllers
 
                     _context.Users.Add(user);
                     await _context.SaveChangesAsync();
-                    UsersInformation userinf = new UsersInformation { IdUser = user.Id };
+                    UsersInformation userinf = new UsersInformation { IdUser = user.Id, AmountTraining = 0, CanceledTraining = 0, LevelStatus = "Ozn" };
                     _context.Add(userinf);
                     await _context.SaveChangesAsync();
 
@@ -53,9 +52,9 @@ namespace Amadeus.Controllers
                     return Json("Вы зарегистрировались");
                 }
                 else
-                    ModelState.AddModelError("", "Некорректные логин и(или) пароль");
+                    ModelState.AddModelError("", "Некорректные данные");
             }
-            return Json(model);
+            return new JsonResult(new BadResponse("Некорректные данные"));
         }
 
         [HttpPost]

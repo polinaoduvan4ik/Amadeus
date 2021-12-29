@@ -1,9 +1,37 @@
 .MainNews{
     width: 100%;
-    height: 663px;
+    height: 100%;
+    margin-top: 89px;
+    top: 0;
+    position: absolute;
+    bottom: 0;
     background-image: url('../images/blur.jpg');
     background-size: cover;
 
+}
+
+.MainNews .Buttons{
+    display: flex;
+    justify-content: space-evenly;
+}
+.MainNews .Buttons .Button{
+    width: 200px;
+    margin: auto;
+}
+
+.ButtonPagin>img{
+    width: 40px;
+    cursor: pointer;
+}
+
+
+.MainNews .Buttons .Button > img{
+    width: 40px;
+    cursor: pointer;
+}
+
+.Rotate{
+    transform: rotate(180deg)
 }
 
 .Home_head{
@@ -11,6 +39,7 @@
     font-size: 60px;
     text-align: center;
     padding-top: 120px;
+    min-height: 400px;
 }
 
 .Home_text{

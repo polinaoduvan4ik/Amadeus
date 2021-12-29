@@ -7,11 +7,17 @@
 
 
 .Calls_list{
-    background-color: aqua;
+    background-color: #D2B48C;
     margin-top: 10px;
     height: 500px;
 }
 
+.Calls_list .CallItem{
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 2px solid grey;
+}
 
 .DeleteCalls_button{
     background-color: #F4ECDC;

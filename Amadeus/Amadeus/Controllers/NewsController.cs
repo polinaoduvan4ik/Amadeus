@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using Amadeus.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -25,9 +26,10 @@ namespace Amadeus.Controllers
             var news = _context.News.ToList();
             if(news != null)
             {
+                int news_count = news.Count();
                 var news_element = news.Skip(1 * page).Take(limit);
 
-                return Json(news_element);
+                return Json(new {news_element = news_element, news_count = news_count});
             }
             else
             {
@@ -39,14 +41,14 @@ namespace Amadeus.Controllers
         [HttpPost]
         [Route("addNews")]
         //добавить новость
-        public async Task<IActionResult> AddNews(string heading, string text)
+        public async Task<IActionResult> AddNews([FromBody]AddNews model)
         {
             try
             {
-                if (heading.Length > 0 && text.Length > 0)
+                if (model.NewsElement != null && model.NewsHeading != null)
                 {
                     var news = _context.News;
-                    News news1 = new News { NewsHeading = heading, NewsElement = text };
+                    News news1 = new News { NewsHeading = model.NewsHeading, NewsElement = model.NewsElement};
                     news.Add(news1);
                     await _context.SaveChangesAsync();
                     return Json(news1);

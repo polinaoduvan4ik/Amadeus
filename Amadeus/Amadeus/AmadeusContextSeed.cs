@@ -32,14 +32,7 @@ namespace Amadeus
                 context.SaveChanges();
             }
 
-           /* if(!context.Users.Any())
-            {
-                var role = context.Roles.FirstOrDefault(x => x.RoleName == "Admin")?.Id;
-                sampleUser.Add(new User
-                {
-                    IdRole = role.HasValue ? role.Value : 1
-                });
-            }*/
+           
 
            
         }

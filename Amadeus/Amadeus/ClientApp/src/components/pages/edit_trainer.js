@@ -1,6 +1,8 @@
 import React from 'react'
 import '../pages/edit_trainer-style.css';
 import { useState, useEffect } from 'react';
+import Server_api from '../services/server_api';
+
 
 
 const EditTrainer = props => {
@@ -8,10 +10,10 @@ const EditTrainer = props => {
     const [descrDirty, setDescrDirty] = useState(false)
     const [descrError, setDescrError] = useState('Поле имени не может быть пустым')
     const [formValid, setFormValid] = useState(false)
-
+    const server_api = new Server_api();
 
     useEffect(() => {
-        if( descrError){
+        if(descrError){
             setFormValid(false)
 
         }else{
@@ -23,10 +25,10 @@ const EditTrainer = props => {
 
     const DescrHandler = (e) =>{
         setDescr(e.target.value)
-        if(!e.target.value.length < 200){
+        if(e.target.value.length <10){
             setDescrError('в описании не должно быть больше 200 символов')
         }else{
-            setDescrError('')
+            setDescrError(null)
         }
     }
 
@@ -38,6 +40,15 @@ const EditTrainer = props => {
                 break
             
         }
+    }
+
+    const handleSubmit = () =>{
+        server_api.editTrainer({TrainerDiscription:descr,id:props.id})
+        .then((data)=>{
+            console.log(data);
+            props.getTrainers();
+            props.onClose();
+        })
     }
 
 
@@ -61,7 +72,7 @@ const EditTrainer = props => {
                 
              </div>             
                 
-                <button disabled={!formValid}  className="Edit_Add_button" >
+                <button disabled={!formValid}  className="Edit_Add_button" onClick={handleSubmit}>
                     Добавить
                 </button>
 

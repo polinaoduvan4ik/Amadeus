@@ -2,6 +2,7 @@ import React from 'react'
 import '../pages/trainerpage-style.css';
 import Server_api from '../services/server_api';
 import AddTraining from './add_training';
+import EditTraining from './edit_training';
 
 
 
@@ -33,7 +34,7 @@ class TrainerPage extends React.Component{
                     <button className='EditTraining_button' onClick={() => this.setState({show2: true})}>
                             Изменить запись 
                     </button>
-
+                    <EditTraining onClose={() => this.setState({show2: false})} show={this.state.show2}/>
                     <button className='DeleteTraining_button'>
                             Удалить запись
                     </button>

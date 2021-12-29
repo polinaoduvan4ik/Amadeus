@@ -49,11 +49,10 @@ class Trainers extends React.Component{
                 </div>
                 <div className="Trainer">
                     <p className="Trainer_name">
-                        вукпк
 
                     </p>
                     <p className="Trainer_description">
-                        
+
                     </p>
 
                 </div>

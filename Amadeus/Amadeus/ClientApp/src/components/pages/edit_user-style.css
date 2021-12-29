@@ -28,9 +28,7 @@
 }
 
 .EditUser_Input_blok{
-    height: 50px;
     width: 550px;
-    background-color: #ebd18e67;
 }
 
 .EditUser_Input{
@@ -46,14 +44,15 @@
     border-radius: 50px;
     width: 250px;
     height: 50px;
-    margin-left: 140px;
-    margin-top: 200px;
     font-size: 20px;
+    margin: auto;
+    display: block;
 
 }
 
 .Close_button{
     text-align: right;
+
 }
 
 

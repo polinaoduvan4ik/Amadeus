@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Amadeus.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -151,7 +152,7 @@ namespace Amadeus.Controllers
 
 
 
-        [HttpPost]
+      /*  [HttpPost]
         [Route("addTraining")]
         public async Task<IActionResult> AddTraining(DateTime date, DateTime begintrain, string trainer)
         {
@@ -186,20 +187,26 @@ namespace Amadeus.Controllers
                 return Json(BadRequest(new { errorMsg = ex.Message }));
             }
         }
-
+*/
         [HttpPost]
         [Route("addCall")]
-        public async Task<IActionResult> AddCall(Call model)
+        public async Task<IActionResult> AddCall([FromBody]AddCall model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var calls = _context.Calls;
-                    Call call_element = new Call { Name = model.Name, Surname = model.Surname, Phone = model.Phone };
-                    calls.Add(call_element);
-                    await _context.SaveChangesAsync();
-                    return Json("Запись на звонок добавлена");
+                    if (model.Name != null && model.Surname != null && model.Phone != null)
+                    {
+                        var calls = _context.Calls;
+                        Call call_element = new Call { Name = model.Name, Surname = model.Surname, Phone = model.Phone };
+                        calls.Add(call_element);
+                        await _context.SaveChangesAsync();
+                        return Json("Запись на звонок добавлена");
+                    }
+                    else
+                        return Json(new BadResponse("Не все поля заполнены"));
+                    
                 }
                 else
                 {

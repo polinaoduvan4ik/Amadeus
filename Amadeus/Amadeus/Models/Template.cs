@@ -9,6 +9,12 @@ namespace Amadeus
     {
         public Template()
         {
+            TemplateName = "";
+            Ozn = 0;
+            Z = 0;
+            FirstLevel = 0;
+            SecondLevel = 0;
+            Poni = 0;
             Shedules = new HashSet<Shedule>();
         }
 

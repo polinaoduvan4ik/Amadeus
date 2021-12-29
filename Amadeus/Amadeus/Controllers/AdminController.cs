@@ -127,24 +127,56 @@ namespace Amadeus.Controllers
         {
             try
             {
-                var trainers = _context.Users;
-                var trainers_inf = _context.UsersInformations;
-                foreach(var a in trainers)
+                var users = _context.Users;
+                var users_inf = _context.UsersInformations;
+                var sch = _context.Shedules;
+                var tr_user = _context.training.Where(t => t.IdSheduleNavigation.IdTrainer == id).ToList();
+                var user = _context.Users.SingleOrDefault(u => u.Id == id);
+                if (tr_user.Count != 0)
+                {
+                    return Json(new BadResponse("Тренер ведет тренировки, его нельзя удалить"));
+
+                }
+               /* if (tr_user != null)
+                {
+                    foreach (var a in _context.training)
+                    {
+                        if (a.Id == id)
+                        {
+                            _context.training.Remove(a);
+
+                        }
+                    }
+                }*/
+                if(user.IdRole.Value == 2)
+                {
+                    foreach(var u in sch)
+                    {
+                        if(u.IdTrainer == id)
+                        {
+                            sch.Remove(u);
+                        }
+                    }
+                }
+                foreach (var a in users)
                 {
                     if(a.Id == id)
                     {
-                        trainers.Remove(a);
+                        users.Remove(a);
+
                     }
                 }
-                foreach (var a in trainers_inf)
+                foreach (var a in users_inf)
                 {
                     if (a.IdUser == id)
                     {
-                        trainers_inf.Remove(a);
+                        users_inf.Remove(a);
+
                     }
                 }
+                _context.SaveChanges();
 
-                await _context.SaveChangesAsync();
+
                 return Json("Запись пользователя удалена");
 
             }
@@ -207,16 +239,16 @@ namespace Amadeus.Controllers
         {
             try
             {
-                var users = _context.Users;
-                List<User> users1 = new List<User>();
-                foreach(var a in users)
+                
+                var users = _context.Users.Where(u => u.IdRole == 1).Select(u => new { u.Id, u.Name,u.Login, u.Surname, u.Phone, u.UsersInformation.LevelStatus, u.UsersInformation.AmountTraining, u.UsersInformation.CanceledTraining}).ToList();
+                if (users != null)
                 {
-                    if (a.IdRole == 1)
-                        users1.Add(a);
-                            
-                }
+                    return Json(users);
 
-                return Json(users1);
+                }
+                else 
+                    return Json(new BadResponse("Нет пользователей"));
+
 
             }
             catch(Exception ex)
@@ -235,10 +267,10 @@ namespace Amadeus.Controllers
             {
                 if(model.Id != 0)
                 {
-                    var users = _context.Users;
+                    var users = _context.Users.Where(u => u.IdRole == 1).ToList();
+                    var users_inf = _context.UsersInformations.ToList();
                     if (users != null)
                     {
-                        List<User> user1 = new List<User>();
                         foreach (var a in users)
                         {
                             if (a.Id == model.Id)
@@ -249,9 +281,23 @@ namespace Amadeus.Controllers
                                     a.Surname = model.Surname;
                                 if (model.Phone != null)
                                     a.Phone = model.Phone;
+                            }
+                           
+                        }
 
+                        if(users_inf != null)
+                        {
+                            foreach(var inf in users_inf)
+                            {
+                                if(inf.IdUser == model.Id)
+                                {
+                                    if (model.LevelStatus != null)
+                                        inf.LevelStatus = model.LevelStatus;
+                                }
+                               
                             }
                         }
+                       
                         await _context.SaveChangesAsync();
 
                         return Json("Данные пользователя изменены");
@@ -262,6 +308,7 @@ namespace Amadeus.Controllers
                         return Json(NotFound(new { errorMsg = "Нет данных" }));
                     }
 
+
                 }
                 else
                 {
@@ -269,17 +316,123 @@ namespace Amadeus.Controllers
 
                 }
 
-
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Json(BadRequest(new { errorMsg = ex.Message }));
 
             }
         }
 
-        
+        [HttpGet]
+        [Route("getCalls")]
+        public async Task<IActionResult> GetCalls()
+        {
+            try
+            {
+                var calls = _context.Calls.ToList();
+                if (calls != null)
+                {
+                    return Json(calls);
 
-        
+                }
+                else
+                    return Json(new BadResponse("Нет пользователей"));
+
+
+            }
+            catch (Exception ex)
+            {
+                return Json(BadRequest(new { errorMsg = ex.Message }));
+
+            }
+        }
+
+        [HttpDelete]
+        [Route("deleteCall")]
+        public async Task<IActionResult> deleteCall(int id)
+        {
+            try
+            {
+                var calls = _context.Calls;
+                foreach (var a in calls)
+                {
+                    if (a.Id == id)
+                    {
+                        calls.Remove(a);
+                    }
+                }
+               
+
+                await _context.SaveChangesAsync();
+                return Json("Запись на звонок удалена");
+
+            }
+            catch (Exception ex)
+            {
+                return Json(BadRequest(new { errorMsg = ex.Message }));
+            }
+
+        }
+
+        [HttpGet]
+        [Route("getSchedule")]
+        public async Task<IActionResult> GetSchedule()
+        {
+            try
+            {
+                var shedule = _context.Shedules.Select(sch => new { sch.Id, sch.IdTrainerNavigation.Name, sch.IdTrainerNavigation.Surname, sch.Data, sch.HoursStart, sch.HoursEnd}).ToList();
+                if (shedule != null)
+                {
+                    return Json(shedule);
+
+                }
+                else
+                    return Json(new BadResponse("Нет доступного расписания"));
+
+
+            }
+            catch (Exception ex)
+            {
+                return Json(BadRequest(new { errorMsg = ex.Message }));
+
+            }
+        }
+
+        [HttpDelete]
+        [Route("deleteScheduleItem")]
+        public async Task<IActionResult> DeleteScheduleItem(int id)
+        {
+            try
+            {
+                var shedule = _context.Shedules;
+                var shedule_trainer = _context.Shedules.Where(sch => sch.Id == id).Select(sch_t => sch_t.IdTrainer).SingleOrDefault();
+                var tr_user = _context.training.Where(t => t.IdSheduleNavigation.IdTrainer == shedule_trainer && t.IdShedule == id).ToList();
+                if (tr_user.Count != 0)
+                {
+                    return Json(new BadResponse("Тренер ведет тренировки, его нельзя удалить из расписания"));
+
+                }
+
+                foreach (var a in shedule)
+                {
+                    if (a.Id == id)
+                    {
+                        shedule.Remove(a);
+                    }
+                }
+
+
+                await _context.SaveChangesAsync();
+                return Json("Запись удалена из расписания");
+
+            }
+            catch (Exception ex)
+            {
+                return Json(BadRequest(new { errorMsg = ex.Message }));
+            }
+
+        }
+
     }
 }

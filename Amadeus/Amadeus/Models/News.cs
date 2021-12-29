@@ -10,5 +10,6 @@ namespace Amadeus
         public int Id { get; set; }
         public string NewsHeading { get; set; }
         public string NewsElement { get; set; }
+        
     }
 }

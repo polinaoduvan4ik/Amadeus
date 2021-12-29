@@ -18,7 +18,7 @@
 }
 
 .Training_list{
-    background-color: aqua;
+    background-color: #D2B48C;
     margin-top: 10px;
     height: 500px;
 }
@@ -29,12 +29,9 @@
     width: 300px;
     height: 50px;
     font-size: 20px;
-    margin-top: 10px;
     margin-left: 470px;
     display: inline-block;
     position: relative;
-
-
 
 }
 
@@ -44,7 +41,6 @@
     width: 300px;
     height: 50px;
     font-size: 20px;
-    margin-top: 10px;
     margin-left: 470px;
     display: inline-block;
     position: relative;

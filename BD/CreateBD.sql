@@ -34,7 +34,7 @@ create table Users_information
   Trainer_photo varbinary(MAX)
 )
 drop table Users_information
-
+ALTER TABLE Users_information ALTER COLUMN Was_on_training BIT;
 
 create table Template
 (
@@ -78,6 +78,8 @@ create table Calls
  Surname nvarchar(30),
  Phone nvarchar(15)
 )
+
+ALTER TABLE Calls ADD PRIMARY KEY (Id);
 
 
 
